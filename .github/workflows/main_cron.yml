@@ -1,0 +1,35 @@
+
+name: Automated News Bot Run
+
+on:
+  schedule:
+    - cron: '0 */6 * * *' # Runs every 6 hours automatically
+  push:
+    branches:
+      - main
+  workflow_dispatch:        # Allows you to also trigger it manually via a button in GitHub
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run News Bot Script
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          WP_SITE_URL: ${{ secrets.WP_SITE_URL }}
+          WP_USERNAME: ${{ secrets.WP_USERNAME }}
+          WP_PASS: ${{ secrets.WP_PASSWORD }}
+        run: python bot.py
